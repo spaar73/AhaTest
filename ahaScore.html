@@ -10,13 +10,13 @@
 </form>
 
 <script>
-  $("#controls").submit(function() {
+  ("#controls").submit(function() {
     new AhaApi({
       accountDomain: $("#subdomain").val(),
       // Replace this with your client ID.
-      clientId: "b11bbb264c7432421b6abc05fae6bf93f541979b9fb42bbef684ab036487fd5c", 
+      clientId: "f9bb2aca499a7cc4ada3ae7edeed78e0a5c015a29c45d36493a51afd23d29064", 
       // Replace this with your redirect URL.
-      redirectUri: "http://lvh.me:4567/scorecard.html"
+      redirectUri: "https://spaar73.github.io/AhaTest/ahaScore.html"
     }).authenticate(function(api, success, message) {
       var productKey = $("#product-key").val();
       
