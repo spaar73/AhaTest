@@ -2,32 +2,92 @@
 <head>
     <title> Test Aha Integratiom </title>
     <script type="text/javascript" charset="utf-8" src="https://secure.aha.io/assets/javascript_api/aha-api.latest.js"></script>
-</head>
-<form id="controls">
-  <input type="text" placeholder="Aha! subdomain" id="subdomain"></input>
-  <input type="text" placeholder="Product key" id="product-key"></input>
-  <input type="submit" class="btn" value="Load features"></input>
-</form>
-
-<script>
-  $("#controls").submit(function() {
-    new AhaApi({
-      accountDomain: $("#subdomain").val(),
-      // Replace this with your client ID.
-      clientId: "f9bb2aca499a7cc4ada3ae7edeed78e0a5c015a29c45d36493a51afd23d29064", 
-      // Replace this with your redirect URL.
-      redirectUri: "https://spaar73.github.io/AhaTest/ahaScore.html"
-    }).authenticate(function(api, success, message) {
-      var productKey = $("#product-key").val();
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" type="text/css"></link>
+    <script type="text/javascript" charset="utf-8" src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="//code.jquery.com/jquery-latest.min.js"></script>
+    <script src="//ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="https://secure.aha.io/assets/javascript_api/aha-api.latest.js"></script>
+    
+    <style>
+      .feature {
+        border-top: 1px solid #0073cf;
+        margin-top: 10px;
+        margin-bottom: 30px;
+      }
+      .feature .reference-num {
+        float: left;
+        padding-right: 10px;
+      }
+      .feature .name {
+        float: left;
+        font-weight: bold;
+      }
+      .feature > .description {
+        clear: left;
+        margin-left: 20px;
+      }
+      .requirement {
+        position: relative;
+        margin-top: 15px;
+        margin-left: 20px;
+        
+      }
+      .requirement .reference-num {
+        position: absolute;
+        font-weight: bold;
+      }
+      .requirement .description {
+        margin-left: 120px;
+      }
       
-      // Hide the controls.
-      $("#controls").remove();
+    </style>
+</head>
+<body class="container"></body>
+  <form id="controls">
+    <input type="text" placeholder="Aha! subdomain" id="subdomain"></input>
+    <input type="text" placeholder="Product key" id="product-key"></input>
+    <input type="submit" class="btn" value="Load features"></input>
+  </form>
 
-      api.get("/products/" + productKey + "/features", {}, function(response) {
-        // Do something with the features.
+  <script id="feature-template" type="text/x-jquery-tmpl">
+    <div class="feature">
+      <div class="reference-num">${reference_num}</div>
+      <div class="name">${name}</div> 
+      <div class="description">{{html description.body}} </div>
+    
+      {{each requirements}}
+        <div class="requirement">
+          <div class="reference-num">${reference_num}</div>
+          <div class="description">{{html description.body}}</div>
+        </div>
+      {{/each}}
+    
+    </div>
+  </script>
+  
+  <div id="features"></div>
+  
+  <script>
+    $("#controls").submit(function() {
+      new AhaApi({
+        accountDomain: $("#subdomain").val(),
+        // Replace this with your client ID.
+        clientId: "f9bb2aca499a7cc4ada3ae7edeed78e0a5c015a29c45d36493a51afd23d29064", 
+        // Replace this with your redirect URL.
+        redirectUri: "https://spaar73.github.io/AhaTest/ahaScore.html"
+      }).authenticate(function(api, success, message) {
+        var productKey = $("#product-key").val();
+      
+        // Hide the controls.
+        $("#controls").remove();
+
+        api.get("/products/" + productKey + "/features", {per_page: 200, fields: 'reference_num,name,description,requirements'}, function(response) {
+          $("#feature-template").tmpl(response.features).appendTo("#features");
+          // Do something with the features.
+        });
       });
+      return false;
     });
-    return false;
-  });
-</script>
+  </script>
+</body>
 </html>
